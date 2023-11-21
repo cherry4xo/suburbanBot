@@ -1,0 +1,6 @@
+charset-normalizer
+pyTelegramBotAPI
+requests
+tortoise_orm
+urllib3
+pydantic
