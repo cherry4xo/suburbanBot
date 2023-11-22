@@ -4,3 +4,4 @@ requests
 tortoise_orm
 urllib3
 pydantic
+secret

@@ -9,6 +9,7 @@ from app.db.schemas import BaseUserCreate, BaseRouteCreate
 
 class User(BaseModel):
     tg_id = fields.IntField()
+    username = fields.CharField(max_length=128)
     first_name = fields.CharField(max_length=128)
 
     @classmethod

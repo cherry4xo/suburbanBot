@@ -10,6 +10,7 @@ class BaseProperties(BaseModel):
 
 class BaseUserCreate(BaseProperties):
     tg_id: int
+    username: str
     first_name: str
 
     class Config:
