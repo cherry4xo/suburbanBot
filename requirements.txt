@@ -5,3 +5,5 @@ tortoise_orm
 urllib3
 pydantic
 secret
+python-decouple
+aiohttp

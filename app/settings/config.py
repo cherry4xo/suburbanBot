@@ -16,7 +16,7 @@ class Settings:
     DB_HOST = config("DB_HOST")
     DB_PORT = config("DB_PORT")
 
-    DB_URL = f"posgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    DB_URL = f"postgres://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     APPLICATIONS = [
         "db"

@@ -1,6 +1,5 @@
 import telebot
 import os
-import menu
 import secrets
 import time
 
@@ -11,10 +10,7 @@ from app.bot import texts
 from app.bot import menu
 from app.settings.config import settings
 
-init()
-
 bot = telebot.TeleBot(settings.TELEGRAM_BOT_TOKEN)
-
 
 @bot.message_handler(commands=["start"])
 async def welcome(message: telebot.types.Message):
@@ -27,7 +23,7 @@ async def welcome(message: telebot.types.Message):
         first_name = message.from_user.first_name
         user = await User.create(**BaseUserCreate(tg_id=uid, first_name=first_name, username=username).model_dump())
 
-        bot.send_message(user.tg_id, texts.first_join(user.first_name), reply_markup=None)
+        bot.send_message(user.tg_id, texts.first_join(user.first_name), reply_markup=menu.start_menu)
 
     else:
-        bot.send_message(user.tg_id, texts.welcome_text(user.first_name), reply_markup=None)
+        bot.send_message(user.tg_id, texts.welcome_text(user.first_name), reply_markup=menu.start_menu)

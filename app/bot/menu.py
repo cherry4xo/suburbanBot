@@ -1,7 +1,8 @@
 import json
 
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from db.models import User, FavoriteRoute
+
+from app.db.models import User, FavoriteRoute
 from app.bot import texts
 
 

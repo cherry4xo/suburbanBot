@@ -46,4 +46,4 @@ class FavoriteRoute(BaseModel):
         return model
     
     class Meta:
-        table = "FavoriteRotes"
+        table = "routes"
