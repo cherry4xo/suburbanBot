@@ -38,7 +38,7 @@ async def welcome(message: telebot.types.Message):
 
 
 async def search_station(message: telebot.types.Message):
-    
+    pass
 
 
 @bot.callback_query_handler(func=lambda call: True)
