@@ -19,6 +19,8 @@ def get_route_text(start_station, finish_station):
 
 
 pick_region = "Pick region"
+search_start_station = "Type the title of start station"
+search_finish_station = "Type the title of finish station"
 favorite_routes_response = "Pick favorite route"
 back_to_welcome_menu = "Back to start menu"
 favorite_routes_button = "Favorite routes"

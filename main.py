@@ -16,6 +16,13 @@ from app.settings.config import settings
 
 bot = AsyncTeleBot(settings.TELEGRAM_BOT_TOKEN)
 
+
+async def user_does_not_exist_message(id: int):
+    await bot.send_message(id, 
+                           texts.user_does_not_exist(id), 
+                           reply_markup=menu.start_menu(id))
+
+
 @bot.message_handler(commands=["start"])
 async def welcome(message: telebot.types.Message):
     uid = int(message.from_user.id)
@@ -30,21 +37,23 @@ async def welcome(message: telebot.types.Message):
         message = await bot.send_message(user.tg_id, texts.welcome_text(user.first_name), reply_markup=menu.start_menu(user))
 
 
+async def search_station(message: telebot.types.Message):
+    
+
+
 @bot.callback_query_handler(func=lambda call: True)
-async def pick_route(call: telebot.types.CallbackQuery):
+async def callback_handler(call: telebot.types.CallbackQuery):
     if call.data.startswith("get_favorites_"):
         user = await User.get_by_tg_id(call.from_user.id)
 
         if user is None:
-            await bot.send_message(call.from_user.id, 
-                                   texts.user_does_not_exist(call.from_user.id), 
-                                   reply_markup=menu.start_menu(call.from_user.id))
+            await user_does_not_exist_message(call.from_user.id) 
         else:
             await bot.send_message(user.tg_id, 
                                    texts.favorite_routes_response, 
                                    reply_markup=await menu.favorite_routes(user))
             
-    elif call.data.startswith("back_to_start_menu"):
+    if call.data.startswith("back_to_start_menu"):
         uid = int(call.from_user.id)
         user = await User.get_by_tg_id(uid)
 
@@ -55,6 +64,21 @@ async def pick_route(call: telebot.types.CallbackQuery):
             message = await bot.send_message(user.tg_id, texts.first_join(user.first_name), reply_markup=menu.start_menu(user))
         else:
             message = await bot.send_message(user.tg_id, texts.welcome_text(user.first_name), reply_markup=menu.start_menu(user))
+
+    if call.data.startswith("new_route"):
+        user = await User.get_by_tg_id(call.from_user.id)
+        await bot.send_message(user.tg_id, texts.pick_region, reply_markup=await menu.get_regions())
+
+
+    if call.data.startswith("region_"):
+        user = await User.get_by_tg_id(call.from_user.id)
+        
+        if not user:
+            await user_does_not_exist_message(call.from_user.id)
+        
+        # start_station = bot.edit_message
+
+
 
 
 if __name__ == "__main__":
