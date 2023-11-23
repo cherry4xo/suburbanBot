@@ -8,5 +8,18 @@ def first_join(name):
     return text
 
 
+def user_does_not_exist(id):
+    text = f"User with {id} id does not exist in my database"
+    return text
+
+
+def get_route_text(start_station, finish_station):
+    text = f"{start_station} --> {finish_station}"
+    return text
+
+
+pick_region = "Pick region"
+favorite_routes_response = "Pick favorite route"
+back_to_welcome_menu = "Back to start menu"
 favorite_routes_button = "Favorite routes"
 get_route_schedule = "Check schedule for new route"
