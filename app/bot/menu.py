@@ -13,13 +13,13 @@ def start_menu(to_user: User) -> InlineKeyboardMarkup:
     return keyboard
 
 
-def pick_region() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup()
-    with open("./app/data/data_russia_trains.json") as file:
-        data = json.load(file)
-        for i in data.keys():
-            keyboard.add(InlineKeyboardButton(text=i, callback_data=f"region_{i}"))
-    return keyboard
+# def pick_region() -> InlineKeyboardMarkup:
+#     keyboard = InlineKeyboardMarkup()
+#     with open("./app/data/data_russia_trains.json") as file:
+#         data = json.load(file)
+#         for i in data.keys():
+#             keyboard.add(InlineKeyboardButton(text=i, callback_data=f"region_{i}"))
+#     return keyboard
 
 
 async def favorite_routes(to_user: User) -> InlineKeyboardMarkup:
