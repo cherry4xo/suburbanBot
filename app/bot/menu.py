@@ -36,14 +36,14 @@ async def favorite_routes(to_user: User) -> InlineKeyboardMarkup:
     return keyboard
 
 
-async def get_regions() -> InlineKeyboardMarkup:
-    keyboard = InlineKeyboardMarkup()
+# async def get_regions() -> InlineKeyboardMarkup:
+#     keyboard = InlineKeyboardMarkup()
 
-    with open("./app/data/data_russia_trains.json") as f:
-        data = json.load(f)
-        for key in sorted(data.keys()):
-            keyboard.add(InlineKeyboardButton(text=f"{key}", callback_data=f"region_{key}"))
+#     with open("./app/data/data_russia_trains.json") as f:
+#         data = json.load(f)
+#         for key in sorted(data.keys()):
+#             keyboard.add(InlineKeyboardButton(text=f"{key}", callback_data=f"region_{key}"))
 
-    keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
+#     keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
 
-    return keyboard
+#     return keyboard
