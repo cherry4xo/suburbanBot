@@ -13,15 +13,6 @@ def start_menu(to_user: User) -> InlineKeyboardMarkup:
     return keyboard
 
 
-# def pick_region() -> InlineKeyboardMarkup:
-#     keyboard = InlineKeyboardMarkup()
-#     with open("./app/data/data_russia_trains.json") as file:
-#         data = json.load(file)
-#         for i in data.keys():
-#             keyboard.add(InlineKeyboardButton(text=i, callback_data=f"region_{i}"))
-#     return keyboard
-
-
 async def favorite_routes(to_user: User) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup()
 
@@ -36,14 +27,41 @@ async def favorite_routes(to_user: User) -> InlineKeyboardMarkup:
     return keyboard
 
 
-# async def get_regions() -> InlineKeyboardMarkup:
-#     keyboard = InlineKeyboardMarkup()
+def searched_start_stations(stations: list) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup()
 
-#     with open("./app/data/data_russia_trains.json") as f:
-#         data = json.load(f)
-#         for key in sorted(data.keys()):
-#             keyboard.add(InlineKeyboardButton(text=f"{key}", callback_data=f"region_{key}"))
+    for station in stations:
+        keyboard.add(InlineKeyboardButton(text=texts.get_station_text(station["title"], station["region_title"]), 
+                                          callback_data=f"startstation_'{station['title']}'_{station['id']}"))
+    
+    keyboard.add(InlineKeyboardButton(text=texts.cancel_search, callback_data=f"new_route"))
 
-#     keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
+    return keyboard
 
-#     return keyboard
+
+def searched_finish_stations(stations: list) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup()
+
+    for station in stations:
+        keyboard.add(InlineKeyboardButton(text=texts.get_station_text(station["title"], station["region_title"]), 
+                                          callback_data=f"finishstation_'{station['title']}'_{station['id']}"))
+    
+    keyboard.add(InlineKeyboardButton(text=texts.cancel_search, callback_data=f"new_route"))
+
+    return keyboard
+
+
+def schedule(to_user: User, start_station_id: str, finish_station_id: str, start_station: str, finish_station: str) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup()
+
+    keyboard.add(InlineKeyboardButton(text=texts.add_route_to_favorites, callback_data=f"addtofavorites_{to_user}_{start_station_id}_{finish_station_id}_{start_station}_{finish_station}"))
+    keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
+
+    return keyboard
+
+def go_to_main_menu_only():
+    keyboard = InlineKeyboardMarkup()
+    
+    keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
+
+    return keyboard
