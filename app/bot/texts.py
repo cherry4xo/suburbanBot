@@ -1,3 +1,8 @@
+import json
+from time import strftime, gmtime
+from datetime import datetime
+
+
 def welcome_text(name):
     text = f"Hello again, {name}! I'm telegram bot for checking suburban trains schedule!"
     return text
@@ -18,12 +23,27 @@ def get_route_text(start_station, finish_station):
     return text
 
 def get_station_text(station, region):
-    text = f"{station} ({region})"[:30]
+    text = f"{station} ({region})"
     return text
 
 
 def get_schedule(schedule):
-    return schedule
+    text = ""
+    data = json.loads(schedule)
+    for trip in data:
+        text = text + f"From {trip['from']}\nTo {trip['to']}\nDeparture time: {datetime.fromisoformat(trip['departure_time']).time().strftime('%H:%M')}\nArrival time: {datetime.fromisoformat(trip['arrival_time']).time().strftime('%H:%M')}\nDuration: {strftime('%H:%M', gmtime(trip['duration']))}\n"
+        if trip["departure_platform"] != "":
+            text = text + f"Departure from {trip['departure_platform']} platform\n"
+        if trip["arrival_platform"] != "":
+            text = text + f"Departure from {trip['arrival_platform']} platform\n"
+        text = text + f"Number of train: {trip['number']}\n{trip['title']}\n{trip['train_subtype']}\n{trip['stops']}\n\n\n"
+
+    return text
+
+
+def add_route(start, finish):
+    text = f"\n\nRoute {start} --> {finish} added"
+    return text
 
 
 pick_region = "Pick region"
@@ -38,4 +58,4 @@ choose_start_station = "Choose start station"
 choose_finish_station = "Choose finish station"
 cannot_get_schedule = "Cannot get schedule from API. Try again later"
 add_route_to_favorites = "Add route to favorites"
-
+back_to_favorites = "Back to favorites"

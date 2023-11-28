@@ -39,9 +39,11 @@ class FavoriteRoute(BaseModel):
         "models.User", related_name="selected_routes", to_field="uuid", on_delete=fields.CASCADE
     )
 
-    async def create(cls, route: BaseRouteCreate) -> "FavoriteRoute":
+    @classmethod
+    async def create(cls, route: BaseRouteCreate, user: User) -> "FavoriteRoute":
         route_dict = route.model_dump()
         model = cls(**route_dict)
+        model.user = user
         await model.save()
         return model
     
