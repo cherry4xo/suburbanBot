@@ -15,6 +15,7 @@ def start_menu(to_user: User) -> InlineKeyboardMarkup:
 
 def from_favorites(to_user: User, start_id: str, finish_id: str) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton(text=texts.refresh_schedule, callback_data=f"updf_{start_id}_{finish_id}"))
     keyboard.add(InlineKeyboardButton(text=texts.remove_from_favorites, callback_data=f"rm_{start_id}_{finish_id}"))
     keyboard.add(InlineKeyboardButton(text=texts.back_to_favorites, callback_data=f"get_favorites_{to_user.tg_id}"))
     keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
@@ -75,6 +76,7 @@ def schedule(start_id, finish_id) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardMarkup()
 
     # keyboard.add(InlineKeyboardButton(text=texts.add_route_to_favorites, callback_data=f"addtofavorites_{to_user}_{start_station_id}_{finish_station_id}_{start_station}_{finish_station}"))
+    keyboard.add(InlineKeyboardButton(text=texts.refresh_schedule, callback_data=f"upds_{start_id}_{finish_id}"))
     keyboard.add(InlineKeyboardButton(text=texts.add_route_to_favorites, callback_data=f"addf_{start_id}_{finish_id}"))
     keyboard.add(InlineKeyboardButton(text=texts.back_to_welcome_menu, callback_data=f"back_to_start_menu"))
 

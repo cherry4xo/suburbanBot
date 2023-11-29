@@ -60,12 +60,12 @@ async def get_schedule_tomorrow_task(to_user: User, start_station_id: str, finis
     
 
 def schedule_filter(trip: dict):
-    return parser.parse(trip["departure"]) > pytz.utc.localize(datetime.utcnow())
+    return parser.parse(trip["departure"]) > pytz.utc.localize(datetime.utcnow()) and parser.parse(trip["departure"]).date() == date.today()
 
 
-def get_normalized_schedule_response(schedule: dict, count: int) -> list:
+def get_normalized_schedule_response(schedule: dict, count: int, today: bool) -> list:
     norm_schedule = []
-    for train in list(filter(schedule_filter, schedule["segments"]))[:count]:
+    for train in list(filter(schedule_filter, schedule["segments"]))[:count] if today is True else schedule["segments"][:count]:
         trip = {"number": train["thread"]["number"],
                 "title": train["thread"]["title"],
                 "train_subtype": train["thread"]["transport_subtype"]["title"],
@@ -224,11 +224,11 @@ async def make_route_callback_handler(call: telebot.types.CallbackQuery):
 
     schedule = await get_schedule_today_task(user, start_station_data["id"], finish_station_id)
 
-    normalized_schedule = get_normalized_schedule_response(schedule[0], 3)
+    normalized_schedule = get_normalized_schedule_response(schedule[0], 3, True)
 
     if len(normalized_schedule) < 3:
         schedule = await get_schedule_tomorrow_task(user, start_station_data["id"], finish_station_id)
-        normalized_tomorrow_schedule = get_normalized_schedule_response(schedule[0], 3 - len(normalized_schedule))
+        normalized_tomorrow_schedule = get_normalized_schedule_response(schedule[0], 3 - len(normalized_schedule), False)
         normalized_schedule.extend(normalized_tomorrow_schedule)
 
     await bot.send_message(call.message.chat.id, 
@@ -283,11 +283,11 @@ async def get_schedule_favorite_route(call: telebot.types.CallbackQuery):
 
     schedule = await get_schedule_today_task(user, start_station_id, finish_station_id)
 
-    normalized_schedule = get_normalized_schedule_response(schedule[0], 3)
+    normalized_schedule = get_normalized_schedule_response(schedule[0], 3, True)
 
     if len(normalized_schedule) < 3:
         schedule = await get_schedule_tomorrow_task(user, start_station_id, finish_station_id)
-        normalized_tomorrow_schedule = get_normalized_schedule_response(schedule[0], 3 - len(normalized_schedule))
+        normalized_tomorrow_schedule = get_normalized_schedule_response(schedule[0], 3 - len(normalized_schedule), False)
         normalized_schedule.extend(normalized_tomorrow_schedule)
 
     await bot.edit_message_text(text=texts.get_schedule(json.dumps(normalized_schedule)),
@@ -320,7 +320,67 @@ async def remove_route_from_favorites(call: telebot.types.CallbackQuery):
         await bot.edit_message_text(text=texts.route_delete_success,
                                     chat_id=call.message.chat.id, 
                                     message_id=call.message.message_id,
-                                    reply_markup=await menu.favorite_routes(user))    
+                                    reply_markup=await menu.favorite_routes(user)) 
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("updf_"))
+async def update_schedule_from_favorites(call: telebot.types.CallbackQuery):
+    user = await User.get_by_tg_id(call.from_user.id)
+
+    if not user:
+        await user_does_not_exist_message(call.from_user.id)
+
+    data = call.data.split('_')[1:]
+    start_station_id = data[0]
+    finish_station_id = data[1]
+
+    schedule = await get_schedule_today_task(user, start_station_id, finish_station_id)
+
+    normalized_schedule = get_normalized_schedule_response(schedule[0], 3, True)
+
+    if len(normalized_schedule) < 3:
+        schedule = await get_schedule_tomorrow_task(user, start_station_id, finish_station_id)
+        normalized_tomorrow_schedule = get_normalized_schedule_response(schedule[0], 3 - len(normalized_schedule), False)
+        normalized_schedule.extend(normalized_tomorrow_schedule)
+
+    try:
+        await bot.edit_message_text(text=texts.get_schedule(json.dumps(normalized_schedule)),
+                                    chat_id=call.message.chat.id,
+                                    message_id=call.message.message_id,
+                                    reply_markup=menu.from_favorites(user, start_station_id, finish_station_id),
+                                    parse_mode="Markdown")
+    except Exception:
+        return
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("upds_"))
+async def update_schedule_from_new_route(call: telebot.types.CallbackQuery):
+    user = await User.get_by_tg_id(call.from_user.id)
+
+    if not user:
+        await user_does_not_exist_message(call.from_user.id)
+
+    data = call.data.split('_')[1:]
+    start_station_id = data[0]
+    finish_station_id = data[1]
+
+    schedule = await get_schedule_today_task(user, start_station_id, finish_station_id)
+
+    normalized_schedule = get_normalized_schedule_response(schedule[0], 3, True)
+
+    if len(normalized_schedule) < 3:
+        schedule = await get_schedule_tomorrow_task(user, start_station_id, finish_station_id)
+        normalized_tomorrow_schedule = get_normalized_schedule_response(schedule[0], 3 - len(normalized_schedule), False)
+        normalized_schedule.extend(normalized_tomorrow_schedule)
+
+    try:
+        await bot.edit_message_text(text=texts.get_schedule(json.dumps(normalized_schedule)),
+                                    chat_id=call.message.chat.id,
+                                    message_id=call.message.message_id,
+                                    reply_markup=menu.from_favorites(user, start_station_id, finish_station_id),
+                                    parse_mode="Markdown")
+    except Exception:
+        return
 
 
 if __name__ == "__main__":
