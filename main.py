@@ -236,7 +236,8 @@ async def make_route_callback_handler(call: telebot.types.CallbackQuery):
 
     await bot.send_message(call.message.chat.id, 
                            text=texts.get_schedule(json.dumps(normalized_schedule)), 
-                           reply_markup=menu.schedule(start_station_data["id"], finish_station_id))
+                           reply_markup=menu.schedule(start_station_data["id"], finish_station_id),
+                           parse_mode="Markdown")
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("addf_"))
@@ -268,7 +269,8 @@ async def add_route_to_favorites(call: telebot.types.CallbackQuery):
     await bot.edit_message_text(text=call.message.text+texts.add_route(added_stations_titles["start"], added_stations_titles["finish"]),
                                 chat_id=call.message.chat.id,
                                 message_id=call.message.message_id,
-                                reply_markup=menu.go_to_main_menu_only())
+                                reply_markup=menu.go_to_main_menu_only(),
+                                parse_mode="Markdown")
     
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("route_"))
@@ -294,7 +296,34 @@ async def get_schedule_favorite_route(call: telebot.types.CallbackQuery):
     await bot.edit_message_text(text=texts.get_schedule(json.dumps(normalized_schedule)),
                                 chat_id=call.message.chat.id,
                                 message_id=call.message.message_id,
-                                reply_markup=menu.from_favorites(user))
+                                reply_markup=menu.from_favorites(user, start_station_id, finish_station_id),
+                                parse_mode="Markdown")
+    
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("rm_"))
+async def remove_route_from_favorites(call: telebot.types.CallbackQuery):
+    user = await User.get_by_tg_id(call.from_user.id)
+
+    if not user:
+        await user_does_not_exist_message(call.from_user.id)
+
+    data = call.data.split("_")[1:]
+    start_station_id = data[0]
+    finish_station_id = data[1]
+
+    route = await FavoriteRoute.get_or_none(start_station=start_station_id, finish_station=finish_station_id, user=user)
+
+    if not route:
+        await bot.edit_message_text(text=texts.route_does_not_exist, 
+                                    chat_id=call.message.chat.id, 
+                                    message_id=call.message.message_id,
+                                    reply_markup=await menu.favorite_routes(user))
+    else:
+        await route.delete()
+        await bot.edit_message_text(text=texts.route_delete_success,
+                                    chat_id=call.message.chat.id, 
+                                    message_id=call.message.message_id,
+                                    reply_markup=await menu.favorite_routes(user))    
 
 
 if __name__ == "__main__":

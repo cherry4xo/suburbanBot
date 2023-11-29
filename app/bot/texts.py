@@ -31,12 +31,12 @@ def get_schedule(schedule):
     text = ""
     data = json.loads(schedule)
     for trip in data:
-        text = text + f"From {trip['from']}\nTo {trip['to']}\nDeparture time: {datetime.fromisoformat(trip['departure_time']).time().strftime('%H:%M')}\nArrival time: {datetime.fromisoformat(trip['arrival_time']).time().strftime('%H:%M')}\nDuration: {strftime('%H:%M', gmtime(trip['duration']))}\n"
+        text = text + f"*From* {trip['from']}\n*To* {trip['to']}\n*Departure time*: {datetime.fromisoformat(trip['departure_time']).time().strftime('%H:%M')}\n*Arrival time*: {datetime.fromisoformat(trip['arrival_time']).time().strftime('%H:%M')}\n*Duration*: {strftime('%H:%M', gmtime(trip['duration']))}\n"
         if trip["departure_platform"] != "":
-            text = text + f"Departure from {trip['departure_platform']} platform\n"
+            text = text + f"*Departure from* {trip['departure_platform']} platform\n"
         if trip["arrival_platform"] != "":
-            text = text + f"Departure from {trip['arrival_platform']} platform\n"
-        text = text + f"Number of train: {trip['number']}\n{trip['title']}\n{trip['train_subtype']}\n{trip['stops']}\n\n\n"
+            text = text + f"*Departure from* {trip['arrival_platform']} platform\n"
+        text = text + f"*Number of train*: {trip['number']}\n{trip['title']}\n{trip['train_subtype']}\n*Stops*: {trip['stops']}\n\n\n"
 
     return text
 
@@ -59,3 +59,6 @@ choose_finish_station = "Choose finish station"
 cannot_get_schedule = "Cannot get schedule from API. Try again later"
 add_route_to_favorites = "Add route to favorites"
 back_to_favorites = "Back to favorites"
+remove_from_favorites = "Remove route from favorites"
+route_does_not_exist = "This route does not exist in the database"
+route_delete_success = "Route deleted from favorites"
