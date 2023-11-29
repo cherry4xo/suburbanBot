@@ -1,7 +1,5 @@
 import telebot
-import os
 import json
-import secrets
 import time
 import asyncio
 import aiohttp
@@ -14,7 +12,6 @@ from telebot.asyncio_storage import StateMemoryStorage
 from telebot.asyncio_filters import StateFilter
 from telebot.asyncio_handler_backends import State, StatesGroup
 from tortoise import run_async
-from pydantic import UUID4
 
 from app.db.init_db import init
 from app.db.models import User, FavoriteRoute
